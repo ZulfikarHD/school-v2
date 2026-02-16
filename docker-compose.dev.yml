@@ -1,0 +1,67 @@
+# Development overrides — use with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Or set in .env:
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml
+
+services:
+  # ──────────────────────────────────────────────
+  # Application (development: mount source code)
+  # ──────────────────────────────────────────────
+  app:
+    volumes:
+      - .:/var/www/html
+    environment:
+      - PHP_OPCACHE_VALIDATE_TIMESTAMPS=1
+      - XDEBUG_MODE=${XDEBUG_MODE:-off}
+
+  # ──────────────────────────────────────────────
+  # Nginx (development: mount public directory)
+  # ──────────────────────────────────────────────
+  nginx:
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./docker/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  # ──────────────────────────────────────────────
+  # Scheduler (development: mount source code)
+  # ──────────────────────────────────────────────
+  scheduler:
+    volumes:
+      - .:/var/www/html
+
+  # ──────────────────────────────────────────────
+  # Horizon (development: mount source code)
+  # ──────────────────────────────────────────────
+  horizon:
+    volumes:
+      - .:/var/www/html
+
+  # ──────────────────────────────────────────────
+  # Vite Dev Server (HMR)
+  # ──────────────────────────────────────────────
+  vite:
+    image: node:22-alpine
+    container_name: school-vite
+    working_dir: /var/www/html
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/node_modules
+    command: sh -c "yarn install && yarn dev --host 0.0.0.0"
+    networks:
+      - school-network
+
+  # ──────────────────────────────────────────────
+  # Mailpit (local email testing)
+  # ──────────────────────────────────────────────
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: school-mailpit
+    restart: unless-stopped
+    ports:
+      - "${FORWARD_MAILPIT_PORT:-1025}:1025"
+      - "${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025"
+    networks:
+      - school-network

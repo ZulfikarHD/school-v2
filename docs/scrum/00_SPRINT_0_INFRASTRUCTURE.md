@@ -27,13 +27,13 @@ Set up the entire development foundation: Docker environment, Laravel 12 + Vue 3
 **Priority:** Must
 
 **Acceptance Criteria:**
-- [ ] `docker compose up` starts all services (app, nginx, postgres, redis, meilisearch)
-- [ ] Hot-reload works for both PHP and Vue/Vite
-- [ ] PostgreSQL 16 is configured with correct extensions
-- [ ] Redis 7 is available for cache/session/queue
-- [ ] Meilisearch container is running and accessible
-- [ ] MinIO (S3-compatible) is running for local file storage
-- [ ] All ports are configurable via `.env`
+- [x] `docker compose up` starts all services (app, nginx, postgres, redis, meilisearch)
+- [x] Hot-reload works for both PHP and Vue/Vite
+- [x] PostgreSQL 16 is configured with correct extensions
+- [x] Redis 7 is available for cache/session/queue
+- [x] Meilisearch container is running and accessible
+- [x] MinIO (S3-compatible) is running for local file storage
+- [x] All ports are configurable via `.env`
 
 **Tasks:**
 
