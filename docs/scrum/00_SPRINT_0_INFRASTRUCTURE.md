@@ -126,13 +126,13 @@ Set up the entire development foundation: Docker environment, Laravel 12 + Vue 3
 **Priority:** Must
 
 **Acceptance Criteria:**
-- [ ] `AdminLayout.vue` — sidebar + topbar shell (desktop-first)
-- [ ] `TeacherLayout.vue` — simplified sidebar shell (tablet + desktop)
-- [ ] `ParentLayout.vue` — bottom navigation shell (mobile-first)
-- [ ] `AuthLayout.vue` — centered card layout for login/register
-- [ ] Layout auto-selected based on user's active role
-- [ ] Responsive breakpoints work correctly
-- [ ] Dark mode NOT implemented (keep it simple for MVP)
+- [x] `AdminLayout.vue` — sidebar + topbar shell (desktop-first)
+- [x] `TeacherLayout.vue` — simplified sidebar shell (tablet + desktop)
+- [x] `ParentLayout.vue` — bottom navigation shell (mobile-first)
+- [x] `AuthLayout.vue` — centered card layout for login/register
+- [x] Layout auto-selected based on user's active role
+- [x] Responsive breakpoints work correctly
+- [x] Dark mode NOT implemented (keep it simple for MVP)
 
 **Tasks:**
 
