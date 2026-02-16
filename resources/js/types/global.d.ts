@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { SharedSchool } from '@/types/models';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -24,6 +25,11 @@ declare module '@inertiajs/core' {
             auth: Auth;
             activeRole: string | null;
             sidebarOpen: boolean;
+            school: SharedSchool | null;
+            flash: {
+                success: string | null;
+                error: string | null;
+            };
             [key: string]: unknown;
         };
     }

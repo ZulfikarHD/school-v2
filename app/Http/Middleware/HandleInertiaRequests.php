@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\School;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -43,6 +44,11 @@ class HandleInertiaRequests extends Middleware
             ],
             'activeRole' => $this->resolveActiveRole($request),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'school' => fn () => $this->resolveSchool(),
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ];
     }
 
@@ -63,5 +69,30 @@ class HandleInertiaRequests extends Middleware
         // TODO: Gunakan spatie/laravel-permission ketika sudah di-wire ke User model
         // return $user->roles->first()?->name;
         return null;
+    }
+
+    /**
+     * Resolve school data untuk shared props.
+     *
+     * Mengambil school pertama yang aktif sebagai default.
+     * Akan diganti dengan tenant resolution saat US-1.2 diimplementasi.
+     *
+     * @return array{id: int, name: string, logo_thumbnail_url: string|null}|null
+     */
+    private function resolveSchool(): ?array
+    {
+        // TODO: Gunakan tenant resolution dari stancl/tenancy (US-1.2)
+        $school = School::query()->where('is_active', true)->first();
+
+        if (! $school) {
+            return null;
+        }
+
+        return [
+            'id' => $school->id,
+            'name' => $school->name,
+            'npsn' => $school->npsn,
+            'logo_thumbnail_url' => $school->logo_thumbnail_url,
+        ];
     }
 }

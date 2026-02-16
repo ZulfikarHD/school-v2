@@ -5,13 +5,13 @@
  * Menampilkan info "Menampilkan X–Y dari Z", tombol prev/next,
  * dan select per-page. Responsive: simplified di mobile.
  */
-import type { AcceptableValue } from "reka-ui"
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-vue-next"
+import type { AcceptableValue } from "reka-ui"
 import { computed } from "vue"
 import { Button } from "@/components/ui/button"
 import {

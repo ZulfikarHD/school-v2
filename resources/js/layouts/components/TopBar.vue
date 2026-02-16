@@ -2,10 +2,11 @@
 /**
  * TopBar — Header bar untuk ParentLayout (mobile-first).
  *
- * Menampilkan logo sekolah, nama aplikasi, dan user menu.
+ * Menampilkan logo sekolah, nama sekolah/aplikasi, dan user menu.
  * Dioptimalkan untuk tampilan mobile dengan touch target yang cukup besar.
  */
 import { usePage } from '@inertiajs/vue3';
+import { Building2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -20,7 +21,8 @@ import { getInitials } from '@/composables/useInitials';
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
-const appName = computed(() => (page.props.name as string) || 'Sekolah');
+const school = computed(() => page.props.school as { name: string; logo_thumbnail_url: string | null } | null);
+const appName = computed(() => school.value?.name ?? (page.props.name as string) || 'Sekolah');
 </script>
 
 <template>
@@ -28,9 +30,22 @@ const appName = computed(() => (page.props.name as string) || 'Sekolah');
         class="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur-sm supports-backdrop-filter:bg-background/60"
     >
         <div class="flex items-center gap-2.5">
-            <AppLogoIcon
-                class="size-7 fill-current text-foreground"
-            />
+            <div class="flex size-7 items-center justify-center overflow-hidden rounded-md">
+                <img
+                    v-if="school?.logo_thumbnail_url"
+                    :src="school.logo_thumbnail_url"
+                    :alt="appName"
+                    class="size-7 object-cover rounded-md"
+                />
+                <Building2
+                    v-else-if="school"
+                    class="size-7 text-foreground"
+                />
+                <AppLogoIcon
+                    v-else
+                    class="size-7 fill-current text-foreground"
+                />
+            </div>
             <span class="text-sm font-semibold text-foreground">
                 {{ appName }}
             </span>

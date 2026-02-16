@@ -21,6 +21,7 @@ class TenantIsolationTest extends TestCase
      */
     private array $sharedModels = [
         'App\\Models\\User',
+        'App\\Models\\School',
     ];
 
     /**

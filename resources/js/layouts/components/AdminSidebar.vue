@@ -5,9 +5,10 @@
  * Digunakan oleh AdminLayout. Menampilkan semua modul yang dapat
  * diakses admin: Dashboard, Siswa, Guru, Keuangan, Akademik, dll.
  */
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
     BookOpen,
+    Building2,
     CreditCard,
     GraduationCap,
     LayoutGrid,
@@ -15,6 +16,8 @@ import {
     Settings,
     Users,
 } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { edit as schoolProfileEdit } from '@/actions/App/Http/Controllers/SchoolProfile/SchoolProfileController';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -31,12 +34,24 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
+const page = usePage();
+const school = computed(() => page.props.school as { id: number } | null);
+
+const mainNavItems = computed<NavItem[]>(() => [
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
     },
+    ...(school.value
+        ? [
+              {
+                  title: 'Profil Sekolah',
+                  href: schoolProfileEdit.url(school.value.id),
+                  icon: Building2,
+              },
+          ]
+        : []),
     {
         title: 'Siswa',
         href: '/students',
@@ -62,7 +77,7 @@ const mainNavItems: NavItem[] = [
         href: '/announcements',
         icon: Megaphone,
     },
-];
+]);
 
 const footerNavItems: NavItem[] = [
     {
