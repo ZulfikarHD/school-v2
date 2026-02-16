@@ -4,7 +4,7 @@ Platform manajemen sekolah berbasis SaaS — multi-tenant, modern, dan siap prod
 
 ## Tech Stack
 
-- **Backend:** Laravel 12, PHP 8.3, PostgreSQL 16, Redis 7
+- **Backend:** Laravel 12, PHP 8.4, PostgreSQL 16, Redis 7
 - **Frontend:** Vue 3, TypeScript, Inertia.js v2 (SSR), Tailwind CSS 4
 - **Search:** Meilisearch
 - **Storage:** MinIO (S3-compatible)
@@ -116,7 +116,7 @@ school-v2/
 ├── config/               # Laravel configuration
 ├── database/             # Migrations, factories, seeders
 ├── docker/               # Docker configuration
-│   ├── app/Dockerfile    # PHP 8.3 + extensions
+│   ├── app/Dockerfile    # PHP 8.4 + extensions
 │   ├── nginx/            # Nginx config
 │   ├── scheduler/        # Laravel scheduler
 │   └── horizon/          # Laravel Horizon
