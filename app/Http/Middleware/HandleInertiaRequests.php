@@ -41,7 +41,27 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'activeRole' => $this->resolveActiveRole($request),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /**
+     * Resolve the active role for the authenticated user.
+     *
+     * Akan menggunakan spatie/laravel-permission ketika sudah di-wire.
+     * Saat ini default ke null (frontend fallback ke AdminLayout).
+     */
+    private function resolveActiveRole(Request $request): ?string
+    {
+        $user = $request->user();
+
+        if (! $user) {
+            return null;
+        }
+
+        // TODO: Gunakan spatie/laravel-permission ketika sudah di-wire ke User model
+        // return $user->roles->first()?->name;
+        return null;
     }
 }
