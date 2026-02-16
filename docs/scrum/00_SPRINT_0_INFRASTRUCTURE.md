@@ -187,12 +187,12 @@ Set up the entire development foundation: Docker environment, Laravel 12 + Vue 3
 **Priority:** Should
 
 **Acceptance Criteria:**
-- [ ] `Components/ui/` directory with base components following shadcn-vue patterns
-- [ ] Button component with variants (primary, secondary, destructive, outline, ghost)
-- [ ] Input, Textarea, Select components with form field wrapper
-- [ ] Dialog and Sheet components for modals/drawers
-- [ ] StatusBadge, CurrencyDisplay, DateDisplay, EmptyState shared components
-- [ ] All components are accessible (keyboard navigation, ARIA)
+- [x] `Components/ui/` directory with base components following shadcn-vue patterns
+- [x] Button component with variants (primary, secondary, destructive, outline, ghost)
+- [x] Input, Textarea, Select components with form field wrapper
+- [x] Dialog and Sheet components for modals/drawers
+- [x] StatusBadge, CurrencyDisplay, DateDisplay, EmptyState shared components
+- [x] All components are accessible (keyboard navigation, ARIA)
 
 **Tasks:**
 
@@ -215,14 +215,14 @@ Set up the entire development foundation: Docker environment, Laravel 12 + Vue 3
 **Priority:** Must
 
 **Acceptance Criteria:**
-- [ ] `DataTable.vue` component built on TanStack Table (headless)
-- [ ] Server-side pagination via Inertia (accepts `pagination` prop from Laravel paginator meta)
-- [ ] Sortable columns with sort indicators
-- [ ] Filterable with search input
-- [ ] Bulk action support (select rows, apply action)
-- [ ] Responsive: table on desktop, card list on mobile
-- [ ] Empty state when no data
-- [ ] Sub-components: `DataTablePagination.vue`, `DataTableFilter.vue`, `DataTableColumnHeader.vue`
+- [x] `DataTable.vue` component built on TanStack Table (headless)
+- [x] Server-side pagination via Inertia (accepts `pagination` prop from Laravel paginator meta)
+- [x] Sortable columns with sort indicators
+- [x] Filterable with search input
+- [x] Bulk action support (select rows, apply action)
+- [x] Responsive: table on desktop, card list on mobile
+- [x] Empty state when no data
+- [x] Sub-components: `DataTablePagination.vue`, `DataTableFilter.vue`, `DataTableColumnHeader.vue`
 
 **Tasks:**
 
