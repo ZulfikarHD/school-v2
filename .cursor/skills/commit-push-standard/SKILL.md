@@ -5,8 +5,8 @@ description: Generate standardized commit messages and PR descriptions using Con
 
 # Commit & Push Standard
 
-Skill untuk menulis commit message dan PR description yang terstruktur,
-menggunakan format Conventional Commits dengan bahasa Indonesia.
+Skill untuk menulis commit message yang jelas, informatif, dan konsisten.
+Format Conventional Commits, bahasa Indonesia. Setiap commit HARUS menjawab: **apa yang berubah, mengapa, dan apa dampaknya**.
 
 ## Workflow
 
@@ -14,93 +14,116 @@ menggunakan format Conventional Commits dengan bahasa Indonesia.
 Diminta commit/push?
 │
 ├─► Run: git status + git diff + git log (parallel)
-├─► Analisis semua perubahan (staged + unstaged)
-├─► Tentukan ukuran perubahan:
-│   ├─► Kecil (1-2 file, simple fix) ──► Format RINGKAS
-│   └─► Besar (3+ file, fitur baru) ──► Format DETAIL
-├─► Tulis commit message dalam bahasa Indonesia
-├─► Stage semua file relevan
+├─► Analisis SEMUA perubahan (staged + unstaged)
+├─► Tulis commit message (SELALU sertakan body)
+├─► Stage file relevan (cek tidak ada .env/secrets)
 ├─► Commit dengan HEREDOC format
 ├─► Push ke remote
 └─► Verifikasi dengan git status
 ```
 
+## Prinsip Utama
+
+1. **Selalu jelaskan MENGAPA** — diff sudah menunjukkan APA, commit message harus menjelaskan alasan dan konteks
+2. **Summary harus cukup deskriptif** — pembaca harus paham garis besar tanpa buka diff
+3. **Body WAJIB** — kecuali perubahan benar-benar trivial (typo 1 kata, format otomatis pint)
+4. **Sebutkan file/komponen penting** — beri gambaran scope perubahan di body
+
 ## Commit Message Format
 
-### Format RINGKAS (perubahan kecil)
+### Summary Line
 
 ```
-<type>(<scope>): <ringkasan dalam present tense>
-
-<penjelasan singkat 1-2 baris jika perlu>
-
-Refs: #<ticket-number>
+<type>(<scope>): <ringkasan deskriptif present tense>
 ```
 
-### Format DETAIL (perubahan besar)
+| Aturan | Detail |
+|--------|--------|
+| Panjang | Maksimal **100 karakter** (bukan 50 — deskriptif lebih penting) |
+| Tense | Present tense: "tambah", "perbaiki", "refactor" |
+| Huruf | Huruf kecil setelah colon |
+| Titik | Tanpa titik di akhir |
+| Bahasa | Indonesia, istilah teknis boleh English |
+
+### Body (WAJIB kecuali trivial)
 
 ```
-<type>(<scope>): <ringkasan dalam present tense>
+<type>(<scope>): <ringkasan deskriptif>
 
-Alasan:
-- <mengapa perubahan ini diperlukan>
-- <masalah apa yang diselesaikan>
+Mengapa:
+- <alasan perubahan ini diperlukan>
+- <masalah yang diselesaikan / kebutuhan bisnis>
 
 Perubahan:
-- <perubahan utama yang dilakukan>
-- <detail penting lainnya>
+- <komponen/file utama yang ditambah/diubah>
+- <detail arsitektur atau keputusan penting>
 
+[Opsional jika ada:]
 Testing:
-- <cara testing yang dilakukan>
+- <test yang ditambah/dijalankan>
 
-[Opsional:]
 Breaking Changes:
 - <hal yang mempengaruhi fungsionalitas existing>
 
 Catatan:
-- <info penting untuk reviewer>
+- <info penting untuk developer lain>
 
 Refs: #<ticket-number>
 ```
+
+### Body Rules
+
+- Wrap di 72 karakter per baris
+- Bahasa Indonesia, istilah teknis boleh English (controller, service, migration, component)
+- Setiap section yang dipakai minimal 1 bullet point
+- Section "Mengapa" WAJIB ada jika body ada
 
 ## Tipe Commit
 
 | Type | Penggunaan | Contoh Scope |
 |------|-----------|--------------|
-| `feat` | Fitur baru | auth, booking, payment |
+| `feat` | Fitur baru | auth, booking, payment, ui, layout |
 | `fix` | Perbaikan bug | validation, ui, api |
 | `refactor` | Restrukturisasi tanpa ubah behavior | service, model |
-| `docs` | Dokumentasi saja | readme, comments |
+| `docs` | Dokumentasi saja | readme, sprint, comments |
 | `style` | Formatting, tanpa perubahan logic | lint, format |
 | `test` | Penambahan/update test | unit, feature |
-| `chore` | Dependency, build config, dll | deps, config |
+| `chore` | Dependency, build config, CI/CD | deps, config, ci |
 | `perf` | Optimasi performa | query, cache |
 
-## Aturan Penulisan
+## Kapan Body Boleh Dilewati? (SANGAT JARANG)
 
-### Summary Line
-- Maksimal 50 karakter
-- Present tense: "tambah" bukan "menambahkan"
-- Huruf kecil setelah colon
-- Tanpa titik di akhir
-
-### Body
-- Wrap di 72 karakter per baris
-- Bahasa Indonesia formal tapi ringkas
-- Fokus pada MENGAPA, bukan APA (yang sudah terlihat di diff)
-- Terminologi teknis boleh tetap English (controller, service, migration)
-
-### Decision: Kapan Pakai Format Detail?
+Body hanya boleh kosong untuk perubahan yang **benar-benar trivial**:
 
 ```
-Perubahan kamu:
-├─► Hanya typo/format/1 file kecil ────► RINGKAS
-├─► Fix bug sederhana ─────────────────► RINGKAS + 1 baris penjelasan
-├─► Fitur baru / multi-file ───────────► DETAIL
-├─► Perubahan database/API ────────────► DETAIL (wajib)
-├─► Breaking change ───────────────────► DETAIL (wajib)
-└─► Config/environment change ─────────► DETAIL (wajib)
+TANPA body (trivial):
+├─► Fix typo 1 kata
+├─► Auto-format pint/prettier (tanpa logic change)
+└─► Update version number di package.json
+
+DENGAN body (SEMUA sisanya):
+├─► Tambah file baru (apapun) ──────────► WAJIB body
+├─► Ubah logic di file manapun ─────────► WAJIB body
+├─► Tambah/ubah component ──────────────► WAJIB body
+├─► Perubahan multi-file ───────────────► WAJIB body
+├─► Fix bug (apapun) ──────────────────► WAJIB body
+├─► Perubahan database/API ─────────────► WAJIB body
+├─► Config/environment change ──────────► WAJIB body
+└─► Apapun yang butuh > 5 detik dipahami ► WAJIB body
 ```
+
+## Menulis Summary yang Baik
+
+Summary harus membuat pembaca paham **apa yang terjadi** tanpa buka diff.
+
+| Buruk (terlalu singkat) | Baik (deskriptif) |
+|------------------------|-------------------|
+| `feat(ui): tambah components` | `feat(ui): tambah DataTable, EmptyState, dan FormField components` |
+| `fix(auth): perbaiki login` | `fix(auth): perbaiki redirect loop saat session expired` |
+| `feat(layout): tambah layout` | `feat(layout): tambah sidebar navigation dan role-based layout` |
+| `refactor(payment): refactor service` | `refactor(payment): ekstrak payment logic ke PaymentService` |
+| `chore(deps): update deps` | `chore(deps): update laravel ke v12.1 dan vue ke v3.5` |
+| `feat(ci): tambah pipeline` | `feat(ci): tambah GitHub Actions CI/CD dengan tenant isolation scan` |
 
 ## PR Description Format
 
@@ -108,11 +131,11 @@ Perubahan kamu:
 ## Ringkasan
 <1-3 poin penjelasan perubahan utama>
 
-## Alasan
-<mengapa perubahan ini diperlukan, konteks bisnis/teknis>
+## Mengapa
+<konteks bisnis/teknis mengapa perubahan ini diperlukan>
 
 ## Perubahan Utama
-- <list perubahan signifikan>
+- <list perubahan signifikan dengan file/komponen>
 
 ## Testing
 - [ ] <langkah testing yang sudah dilakukan>
@@ -126,11 +149,11 @@ Perubahan kamu:
 
 ## Checklist Sebelum Commit
 
-- [ ] Tipe commit sudah tepat (feat/fix/refactor/dll)
-- [ ] Summary under 50 chars, present tense
-- [ ] Ada penjelasan MENGAPA (untuk perubahan non-trivial)
+- [ ] Summary deskriptif dan under 100 chars
+- [ ] Body menjelaskan MENGAPA (kecuali trivial)
+- [ ] Body menyebutkan komponen/file utama yang berubah
+- [ ] Tipe commit sudah tepat
 - [ ] Tidak ada file rahasia (.env, credentials)
-- [ ] Perubahan database/API? Pakai format DETAIL
 - [ ] Referensi ticket jika ada
 
 ## Larangan
@@ -140,8 +163,10 @@ Perubahan kamu:
 - JANGAN force push ke main/master
 - JANGAN skip hooks (--no-verify)
 - JANGAN commit --amend kecuali commit terakhir belum di-push
-- JANGAN tulis "fix stuff", "update", "wip" tanpa konteks
+- JANGAN tulis summary generic: "fix stuff", "update", "wip", "tambah components"
+- JANGAN buat summary yang butuh buka diff untuk dipahami
+- JANGAN lewati body untuk perubahan non-trivial
 
-## Contoh Lengkap
+## Contoh
 
-Lihat [examples.md](examples.md) untuk contoh real-world.
+Lihat [examples.md](examples.md) untuk contoh lengkap.

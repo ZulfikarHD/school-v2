@@ -1,179 +1,159 @@
 # Commit Message Examples
 
-Contoh real-world commit message untuk referensi.
+Contoh commit message menggunakan standar yang diperbarui.
 
 ---
 
-## Format RINGKAS
+## Contoh: Commit Deskriptif dengan Body
 
-### Typo fix
-```
-fix(ui): perbaiki typo pada error message payment
+### Fitur UI components (multi-file)
 
-Mengubah "pembayran" menjadi "pembayaran" di modal gagal bayar
 ```
+feat(ui): tambah DataTable, EmptyState, CurrencyDisplay, dan FormField components
 
-### Simple style fix
-```
-style(lint): format ulang file controller sesuai pint
-```
-
-### Dependency update
-```
-chore(deps): update laravel framework ke v12.1
-```
-
-### Documentation
-```
-docs(readme): tambah instruksi setup environment lokal
-```
-
----
-
-## Format DETAIL
-
-### Fitur baru
-```
-feat(booking): tambah flow booking lapangan dengan payment
-
-Alasan:
-- User belum bisa melakukan booking langsung dari aplikasi
-- Proses manual via WhatsApp menyebabkan double booking
-- Bagian dari sprint fase 2 growth features
+Mengapa:
+- Dibutuhkan reusable components untuk halaman CRUD yang akan dibuat di sprint berikutnya
+- Tanpa standar components, setiap developer akan buat implementasi sendiri
+- DataTable harus support pagination, filtering, dan responsive card view di mobile
 
 Perubahan:
-- Buat BookingController dengan store/show/cancel actions
-- Tambah BookingService untuk business logic dan validasi slot
-- Buat migration untuk tabel bookings dan booking_slots
-- Implementasi Midtrans payment gateway integration
-- Tambah BookingResource untuk API response
+- DataTable: DataTablePagination.vue, DataTableFilter.vue, types.ts
+- Shared: EmptyState.vue, DateDisplay.vue, CurrencyDisplay.vue
+- Forms: FormField.vue dengan label, error, dan hint support
+- Composables: useCurrency.ts untuk format Rupiah, useOnlineStatus.ts
+
+Refs: US-S0.6, US-S0.7
+```
+
+### Layout dan navigation
+
+```
+feat(layout): tambah sidebar navigation dan role-based layout untuk admin, guru, dan ortu
+
+Mengapa:
+- Setiap role membutuhkan navigasi yang berbeda sesuai fitur yang diakses
+- Layout harus responsive: sidebar di desktop, bottom nav di mobile (ortu)
+- Bagian dari sprint 0 setup infrastruktur frontend
+
+Perubahan:
+- AppLayout.vue sebagai base layout dengan slot sidebar dan content
+- AdminLayout, TeacherLayout, ParentLayout dengan menu items sesuai role
+- Sidebar.vue dengan collapse state dan active route indicator
+- MobileBottomNav.vue untuk parent role di mobile
 
 Testing:
-- Feature test untuk full booking flow (happy + edge case)
-- Unit test untuk kalkulasi harga dan slot availability
-- Manual test payment di staging dengan Midtrans sandbox
+- Manual test navigasi di setiap role
+- Verifikasi responsive behavior di viewport 360px dan 1280px
 
-Catatan:
-- Midtrans server key perlu di-set di .env (MIDTRANS_SERVER_KEY)
-- Rate limit 10 booking per user per jam untuk prevent abuse
-
-Refs: #BOOK-123
+Refs: US-S0.4
 ```
 
-### Bug fix kompleks
-```
-fix(auth): perbaiki session expired tidak redirect ke login
+### CI/CD pipeline
 
-Alasan:
+```
+feat(ci): tambah GitHub Actions CI/CD pipeline dengan tenant isolation scan
+
+Mengapa:
+- Belum ada automated testing dan deployment pipeline
+- Perlu memastikan tenant data isolation tidak bocor antar sekolah
+- Manual deployment rawan human error
+
+Perubahan:
+- .github/workflows/ci.yml: lint, test, build pipeline
+- .github/workflows/deploy.yml: staging dan production deployment
+- Tambah tenant isolation scan script di scripts/check-tenant-isolation.sh
+- Docker build optimization dengan multi-stage build
+
+Testing:
+- Pipeline tested di branch feature, semua step passing
+- Tenant isolation scan detect 0 violations
+
+Refs: US-S0.5
+```
+
+### Fix bug
+
+```
+fix(auth): perbaiki redirect loop saat session expired di halaman dashboard
+
+Mengapa:
 - User yang session-nya expired tetap di halaman dashboard
-- API call gagal dengan 401 tapi tidak ada handling di frontend
-- Sudah dilaporkan oleh 5 user dalam seminggu terakhir
+- API call gagal 401 tapi frontend tidak handle redirect
+- Dilaporkan 5 user dalam seminggu terakhir
 
 Perubahan:
-- Tambah Axios interceptor untuk handle response 401
-- Implementasi auto-redirect ke login page dengan flash message
-- Simpan intended URL untuk redirect setelah login ulang
-- Tambah middleware CheckSessionExpiry untuk double protection
+- Tambah Axios response interceptor untuk handle 401
+- Auto-redirect ke login dengan flash message "Sesi berakhir"
+- Simpan intended URL untuk redirect setelah re-login
 
 Testing:
-- Feature test simulasi expired session
-- Manual test dengan mempersingkat session lifetime
-- Verifikasi redirect flow setelah re-login
-
-Refs: #AUTH-89
-```
-
-### Database/API change
-```
-feat(membership): tambah sistem membership tier untuk venue
-
-Alasan:
-- Owner membutuhkan fitur loyalitas untuk retain customer
-- Membership tier (Bronze/Silver/Gold) memberikan diskon berbeda
-- Bagian dari epic E16 membership management
-
-Perubahan:
-- Buat migration: memberships, membership_tiers, user_memberships
-- Tambah MembershipService dengan logic upgrade/downgrade tier
-- Buat API endpoint untuk CRUD membership oleh owner
-- Tambah MembershipResource dan MembershipTierResource
-- Implementasi auto-upgrade berdasarkan total transaksi
-
-Testing:
-- Feature test untuk semua CRUD operations
-- Unit test untuk kalkulasi tier upgrade threshold
-- Test edge case: downgrade saat membership expired
-
-Breaking Changes:
-- Tabel users ditambah kolom current_membership_tier_id (nullable)
-
-Catatan:
-- Perlu jalankan migration: php artisan migrate
-- Seeder tersedia: php artisan db:seed --class=MembershipTierSeeder
-
-Refs: #MEM-201
+- Feature test simulasi expired session dengan assertRedirect
+- Manual test dengan session lifetime diperpendek ke 1 menit
 ```
 
 ### Refactor
-```
-refactor(payment): ekstrak payment logic ke dedicated service
 
-Alasan:
-- PaymentController sudah 400+ baris dan sulit di-maintain
-- Logic payment tersebar di controller dan model
-- Perlu reusable untuk fitur booking dan membership
+```
+refactor(payment): ekstrak payment logic dari controller ke PaymentService
+
+Mengapa:
+- PaymentController sudah 400+ baris, sulit di-maintain
+- Logic payment perlu reusable untuk fitur booking dan membership
+- Tidak ada separation of concerns antara HTTP layer dan business logic
 
 Perubahan:
-- Buat PaymentService dengan method: process, verify, refund
-- Pindahkan semua payment logic dari controller ke service
-- Tambah PaymentGatewayInterface untuk abstraksi gateway
-- Update controller untuk menggunakan service layer
-- Tidak ada perubahan behavior atau response format
+- Buat PaymentService dengan method: process(), verify(), refund()
+- Buat PaymentGatewayInterface untuk abstraksi Midtrans/Xendit
+- Controller sekarang hanya handle request/response, delegate ke service
+- Tidak ada perubahan behavior atau API response format
 
 Testing:
-- Semua existing test tetap passing tanpa modifikasi
-- Tambah unit test khusus untuk PaymentService
+- Semua existing test passing tanpa modifikasi
+- Tambah unit test untuk PaymentService (12 test cases)
+```
 
-Refs: #TECH-55
+### Database migration
+
+```
+feat(akademik): tambah tabel mata pelajaran dan jadwal kelas
+
+Mengapa:
+- Guru membutuhkan manajemen jadwal mengajar
+- Admin perlu assign mata pelajaran ke kelas dan guru
+- Foundation untuk fitur absensi dan penilaian di sprint berikutnya
+
+Perubahan:
+- Migration: subjects, class_schedules, subject_teacher pivot
+- Model: Subject, ClassSchedule dengan relasi dan factory
+- Seeder: SubjectSeeder dengan mata pelajaran kurikulum merdeka
+- Enum: SubjectCategory (Umum, Muatan Lokal, Ekstrakurikuler)
+
+Testing:
+- Feature test CRUD subjects
+- Unit test validasi schedule conflict (tidak boleh bentrok)
+
+Breaking Changes:
+- Perlu jalankan migration: php artisan migrate
+
+Refs: US-S1.3
 ```
 
 ---
 
-## PR Description Contoh
+## Contoh: Commit Trivial (Tanpa Body)
 
-### Fitur Baru
-```markdown
-## Ringkasan
-- Implementasi sistem booking lapangan dengan payment integration
-- User bisa pilih slot, bayar via Midtrans, dan terima konfirmasi
-- Owner mendapat notifikasi real-time untuk setiap booking baru
+Hanya untuk perubahan yang BENAR-BENAR trivial:
 
-## Alasan
-Proses booking manual via WhatsApp menyebabkan double booking dan
-pengalaman user yang buruk. Sistem otomatis mengurangi beban operasional
-owner sekaligus meningkatkan conversion rate.
+```
+fix(ui): perbaiki typo "pembayran" menjadi "pembayaran"
+```
 
-## Perubahan Utama
-- BookingController + BookingService (create/cancel/reschedule)
-- Midtrans payment gateway integration
-- Real-time notification via broadcast
-- Migration untuk bookings, booking_slots, payments
-- Vue pages: BookingCreate, BookingDetail, BookingHistory
+```
+style(lint): format ulang file sesuai pint rules
+```
 
-## Testing
-- [x] Feature test: full booking flow
-- [x] Feature test: cancellation dan refund
-- [x] Feature test: slot conflict handling
-- [x] Unit test: price calculation
-- [ ] E2E test di staging environment
-
-## Screenshot
-(attach screenshot booking flow di mobile)
-
-## Catatan untuk Reviewer
-- Perlu setup MIDTRANS_SERVER_KEY di .env
-- Cek khusus logic slot overlap di BookingService@validateSlot
-- Payment webhook endpoint perlu di-whitelist di Midtrans dashboard
+```
+chore(deps): bump yarn.lock setelah update
 ```
 
 ---
@@ -181,21 +161,59 @@ owner sekaligus meningkatkan conversion rate.
 ## Anti-Pattern (JANGAN Lakukan)
 
 ```
-# Terlalu singkat, tidak ada konteks
-fix stuff
+# Terlalu singkat — tidak ada konteks apa yang ditambah
+feat(ui): tambah components
 
-# Terlalu generic
+# Generic — update apa? kenapa?
 update code
 
-# Work in progress tanpa detail
+# WIP tanpa informasi
 wip
 
-# Menjelaskan WHAT yang sudah obvious dari diff
-tambah variabel $name di UserController
+# Menjelaskan APA yang sudah jelas dari diff, bukan MENGAPA
+feat(user): tambah kolom phone_number di tabel users
 
-# Menyalahkan orang lain
-fix kode jelek dari developer sebelumnya
+# Summary ambigu — base apa? layout apa?
+feat(layout): tambah base layout
 
-# Campuran bahasa tidak konsisten
-feat: menambahkan new feature untuk user baru
+# Body tidak menjelaskan alasan
+feat(auth): tambah login page
+
+Perubahan:
+- Tambah LoginPage.vue
+- Tambah LoginController.php
+(^ ini cuma repeat summary, tidak ada nilai tambah)
+```
+
+---
+
+## PR Description Contoh
+
+```markdown
+## Ringkasan
+- Tambah reusable DataTable component dengan pagination dan responsive card view
+- Tambah shared components: EmptyState, CurrencyDisplay, DateDisplay
+- Tambah FormField component untuk standarisasi form layout
+
+## Mengapa
+Sprint berikutnya akan banyak halaman CRUD (siswa, guru, pembayaran).
+Tanpa standar components, setiap halaman akan punya implementasi berbeda
+yang menyulitkan maintenance. Components ini juga sudah dioptimasi untuk
+budget Android device (Redmi 9-class) yang jadi target utama user parent.
+
+## Perubahan Utama
+- DataTable: support server-side pagination, search filter, mobile card layout
+- CurrencyDisplay: format Rupiah dengan useCurrency composable
+- EmptyState: consistent empty state dengan icon, title, description, CTA
+- FormField: wrapper untuk label + input + error + hint
+
+## Testing
+- [x] Unit test useCurrency formatting
+- [x] Manual test responsive DataTable di 360px viewport
+- [ ] Integration test dengan real API data
+
+## Catatan untuk Reviewer
+- DataTable pagination menggunakan Inertia preserveState untuk UX
+- CurrencyDisplay intentionally tidak pakai Intl.NumberFormat karena
+  inconsistent di Android WebView lama
 ```
