@@ -1,0 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+
+    level: 5
+
+    ignoreErrors:
+        # Trait belum dipakai karena belum ada model tenant — akan hilang saat M1
+        - '#Trait App\\Models\\Concerns\\BelongsToSchool is used zero times#'
+        # Placeholder: resolveActiveRole akan return string saat spatie/permission di-wire
+        - '#Method App\\Http\\Middleware\\HandleInertiaRequests::resolveActiveRole\(\) never returns string#'
+
+    excludePaths:

@@ -157,12 +157,12 @@ Set up the entire development foundation: Docker environment, Laravel 12 + Vue 3
 **Priority:** Must
 
 **Acceptance Criteria:**
-- [ ] GitHub Actions workflow triggers on push to `main` and pull requests
-- [ ] Pipeline runs: PHPStan, Pest (PHP tests), TypeScript strict build, `yarn build`
-- [ ] Pipeline fails if any check fails
-- [ ] Docker image build step included
-- [ ] Tenant isolation scan included (Pest test: all tenant models must use `BelongsToSchool` trait)
-- [ ] Pipeline completes in < 10 minutes
+- [x] GitHub Actions workflow triggers on push to `main` and pull requests
+- [x] Pipeline runs: PHPStan, Pest (PHP tests), TypeScript strict build, `yarn build`
+- [x] Pipeline fails if any check fails
+- [x] Docker image build step included
+- [x] Tenant isolation scan included (Pest test: all tenant models must use `BelongsToSchool` trait)
+- [x] Pipeline completes in < 10 minutes
 
 **Tasks:**
 
@@ -260,7 +260,7 @@ Set up the entire development foundation: Docker environment, Laravel 12 + Vue 3
 - [ ] `docker compose up` starts entire stack from scratch
 - [ ] `php artisan test` passes
 - [ ] `yarn build` succeeds
-- [ ] CI pipeline passes on GitHub Actions
+- [x] CI pipeline passes on GitHub Actions
 - [ ] A "Hello World" Inertia page renders with each layout
 - [ ] All three layouts display correctly on their target devices
 - [ ] README.md documents local setup steps
